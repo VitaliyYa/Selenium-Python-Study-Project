@@ -3,6 +3,7 @@ selenium_env/
 chrome-data/
 geckodriver.log
 __pycache__/
+.idea/
 
 
 # Byte-compiled / optimized / DLL files
