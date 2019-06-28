@@ -4,20 +4,22 @@ from selenium.webdriver.chrome.options import Options
 
 
 def pytest_addoption(parser):
-    parser.addoption('--language', action='store', default='en',
-                     help='Choose language: ar ca cs da de el en es fi fr it ko nl pl pt pt-br ro ru sk uk zh-hans en-gb')
+    parser.addoption('--browser', action='store', help='select browser chrome or firefox', default='chrome')
+    parser.addoption('--language', action='store', help='select language', default='en')
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope='function')
 def browser(request):
-    languages = ['ar', 'ca', 'cs', 'da', 'de', 'el', 'en', 'es', 'fi', 'fr', 'it', 'ko', 'nl', 'pl', 'pt', 'pt-br', 'ro', 'ru', 'sk', 'uk', 'zh-hans', 'en-gb']
-    language = request.config.getoption('language')
-    if language in languages:
+    browser = request.config.getoption('browser')
+    user_language = request.config.getoption('language')
+    if browser == 'chrome':
         options = Options()
-        options.add_experimental_option('prefs', {'intl.accept_languages': language})
+        options.add_experimental_option('prefs', {'intl.accept_languages': user_language})
         browser = webdriver.Chrome(options=options)
-    else:
-        print(f'\nlanguage "{language}"" is not supported. Язык "{language}" не поддерживается.')
-        print(f'Try: {", ".join(languages)}.')
+    elif browser == 'firefox':
+        fp = webdriver.FirefoxProfile()
+        fp.set_preference('intl.accept_languages', user_language)
+        browser = webdriver.Firefox(firefox_profile=fp)
+
     yield browser
     browser.quit()
